@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "Gimnasio"
+    "app_gim",
 ]
 
 MIDDLEWARE = [
@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'Gimnasio.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gimnasio',
+        'NAME': 'gimnasio_db',
         'USER': 'root',
         'PASSWORD': '3207',
         'HOST': 'localhost',

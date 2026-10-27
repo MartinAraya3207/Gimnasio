@@ -1,0 +1,4 @@
+"para el python manage.py shell"
+
+"from django.contrib.auth.models import User"
+"from app_gim.models import Disciplina, Equipamiento, Rutina, Inscripcion"
