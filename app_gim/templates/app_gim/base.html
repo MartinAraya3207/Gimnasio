@@ -1,0 +1,29 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Gimnasio de Barrio{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'app_gim/css/estilos.css' %}">
+</head>
+<body>
+  {% include 'app_gim/_menu.html' %}
+
+  {% block hero %}{% endblock %}
+
+  <main class="contenedor">
+    {# Mensajes de resultado (éxito/error) de todo el sitio #}
+    {% if messages %}
+      <ul class="mensajes">
+        {% for mensaje in messages %}
+          <li class="mensaje {{ mensaje.tags }}">{{ mensaje }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% block contenido %}{% endblock %}
+  </main>
+
+  <footer class="pie">Gimnasio de Barrio · Proyecto integrador, Programación Back End</footer>
+</body>
+</html>

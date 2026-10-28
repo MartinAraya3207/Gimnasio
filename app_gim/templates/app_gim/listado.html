@@ -1,0 +1,51 @@
+{% extends 'app_gim/base.html' %}
+
+{% block titulo %}Rutinas · Gimnasio de Barrio{% endblock %}
+
+{% block contenido %}
+  <h1>Rutinas</h1>
+
+  <form class="filtros" method="get" action="{% url 'app_gim:listado' %}">
+    <label class="campo-busqueda">Buscar
+      <input type="search" name="q" value="{{ q }}" placeholder="Título o descripción">
+    </label>
+    <label>Disciplina
+      <select name="disciplina">
+        <option value="">Todas</option>
+        {% for d in disciplinas %}
+          <option value="{{ d.id }}"{% if d.id|stringformat:"s" == disciplina_id %} selected{% endif %}>{{ d.nombre }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button class="boton boton-primario" type="submit">Buscar</button>
+    {% if q or disciplina_id %}<a href="{% url 'app_gim:listado' %}">Quitar filtros</a>{% endif %}
+  </form>
+
+  <p class="resumen">{{ pagina.paginator.count }} rutina{{ pagina.paginator.count|pluralize }} encontrada{{ pagina.paginator.count|pluralize }}</p>
+
+  <div class="rejilla">
+    {% for rutina in pagina %}
+      {% include 'app_gim/_tarjeta_rutina.html' with r=rutina %}
+    {% empty %}
+      <p class="vacio">No encontramos rutinas con esos filtros. Prueba con otra palabra o quita la disciplina.</p>
+    {% endfor %}
+  </div>
+
+  {% if pagina.paginator.num_pages > 1 %}
+    <nav class="paginacion" aria-label="Paginación">
+      {% if pagina.has_previous %}
+        <a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ pagina.previous_page_number }}">Anterior</a>
+      {% else %}
+        <span class="inactivo">Anterior</span>
+      {% endif %}
+
+      <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+
+      {% if pagina.has_next %}
+        <a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ pagina.next_page_number }}">Siguiente</a>
+      {% else %}
+        <span class="inactivo">Siguiente</span>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endblock %}

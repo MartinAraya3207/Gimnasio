@@ -63,7 +63,7 @@ class Rutina(models.Model):
     )
 
     class Meta:
-        ordering = ['-fecha_creacion']
+        ordering = ['-fecha_creacion', '-id']
 
     def __str__(self):
         return self.titulo

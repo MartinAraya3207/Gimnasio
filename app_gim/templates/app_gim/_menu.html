@@ -1,0 +1,12 @@
+<header class="barra">
+  <a class="marca" href="{% url 'app_gim:portada' %}">Gimnasio de Barrio</a>
+  <nav>
+    <a href="{% url 'app_gim:portada' %}">Inicio</a>
+    <a href="{% url 'app_gim:listado' %}">Rutinas</a>
+
+    {# Hito 3 (Martín): menú distinto con y sin sesión. #}
+    {% if user.is_authenticated %}
+      <span class="usuario">{{ user.username }}</span>
+    {% endif %}
+  </nav>
+</header>

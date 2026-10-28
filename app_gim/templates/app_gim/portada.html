@@ -1,0 +1,32 @@
+{% extends 'app_gim/base.html' %}
+
+{% block titulo %}Inicio · Gimnasio de Barrio{% endblock %}
+
+{% block hero %}
+  <section class="hero">
+    <div class="hero-interior">
+      <h1>Las rutinas de tu gimnasio, en un solo lugar</h1>
+      <p>Los entrenadores publican sus rutinas y los socios se inscriben en las que les sirven. Se acabaron los mensajes sueltos.</p>
+      <a class="boton" href="{% url 'app_gim:listado' %}">Ver rutinas</a>
+    </div>
+  </section>
+{% endblock %}
+
+{% block contenido %}
+  <dl class="contadores">
+    <div><dt>Rutinas publicadas</dt><dd>{{ total_rutinas }}</dd></div>
+    <div><dt>Disciplinas</dt><dd>{{ total_disciplinas }}</dd></div>
+    <div><dt>Inscripciones confirmadas</dt><dd>{{ total_confirmadas }}</dd></div>
+  </dl>
+
+  <h2>Rutinas más recientes</h2>
+  <div class="rejilla">
+    {% for rutina in ultimas %}
+      {% include 'app_gim/_tarjeta_rutina.html' with r=rutina %}
+    {% empty %}
+      <p class="vacio">Todavía no hay rutinas publicadas.</p>
+    {% endfor %}
+  </div>
+
+  <p><a href="{% url 'app_gim:listado' %}">Ver todas las rutinas</a></p>
+{% endblock %}

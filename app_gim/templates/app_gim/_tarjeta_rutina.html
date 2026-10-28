@@ -1,0 +1,18 @@
+{# Tarjeta de una rutina. Se usa con: include ... with r=rutina #}
+<article class="tarjeta">
+  <h3><a href="{% url 'app_gim:detalle' r.pk %}">{{ r.titulo }}</a></h3>
+  <p class="meta">
+    <span class="nivel nivel-{{ r.nivel }}">{{ r.get_nivel_display }}</span>
+    <span>{% if r.disciplina %}{{ r.disciplina.nombre }}{% else %}Sin disciplina{% endif %}</span>
+  </p>
+  <ul class="meta">
+    <li>{{ r.duracion_minutos }} min</li>
+    <li>{{ r.cupos }} cupos</li>
+    <li>Entrenador: {{ r.entrenador.username }}</li>
+  </ul>
+  {% if r.equipamientos.all %}
+    <p class="chips">
+      {% for e in r.equipamientos.all %}<span class="chip">{{ e.nombre }}</span> {% endfor %}
+    </p>
+  {% endif %}
+</article>

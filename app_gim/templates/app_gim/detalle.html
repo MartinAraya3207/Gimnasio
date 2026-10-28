@@ -1,0 +1,45 @@
+{% extends 'app_gim/base.html' %}
+
+{% block titulo %}{{ rutina.titulo }} · Gimnasio de Barrio{% endblock %}
+
+{% block contenido %}
+  <p><a href="{% url 'app_gim:listado' %}">Volver al listado</a></p>
+
+  <article class="detalle">
+    <h1>{{ rutina.titulo }}</h1>
+    <p class="meta">
+      <span class="nivel nivel-{{ rutina.nivel }}">{{ rutina.get_nivel_display }}</span>
+    </p>
+
+    <dl class="datos">
+      <div>
+        <dt>Disciplina</dt>
+        <dd>
+          {% if rutina.disciplina %}
+            <a href="{% url 'app_gim:listado' %}?disciplina={{ rutina.disciplina.id }}">{{ rutina.disciplina.nombre }}</a>
+          {% else %}
+            Sin disciplina
+          {% endif %}
+        </dd>
+      </div>
+      <div><dt>Entrenador</dt><dd>{{ rutina.entrenador.get_full_name|default:rutina.entrenador.username }}</dd></div>
+      <div><dt>Duración</dt><dd>{{ rutina.duracion_minutos }} minutos</dd></div>
+      <div><dt>Cupos</dt><dd>{{ rutina.cupos }}</dd></div>
+      <div><dt>Publicada</dt><dd>{{ rutina.fecha_creacion|date:"d/m/Y" }}</dd></div>
+    </dl>
+
+    <h2>Equipamiento</h2>
+    {% if rutina.equipamientos.all %}
+      <p class="chips">
+        {% for e in rutina.equipamientos.all %}<span class="chip">{{ e.nombre }}</span> {% endfor %}
+      </p>
+    {% else %}
+      <p class="suave">Esta rutina no requiere equipamiento.</p>
+    {% endif %}
+
+    <h2>Descripción</h2>
+    <p>{{ rutina.descripcion|linebreaksbr }}</p>
+
+    {# Hito 4 y 5: aquí van "Editar/Eliminar" (solo el dueño) e "Inscribirme" (otros usuarios con sesión). #}
+  </article>
+{% endblock %}
