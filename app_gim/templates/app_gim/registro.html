@@ -1,0 +1,11 @@
+{% extends 'app_gim/base.html' %}
+{% block titulo %}Registro · Gimnasio de Barrio{% endblock %}
+{% block contenido %}
+  <h1>Crear cuenta</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="boton boton-primario" type="submit">Registrarme</button>
+  </form>
+  <p>¿Ya tienes cuenta? <a href="{% url 'app_gim:ingreso' %}">Ingresa aquí</a></p>
+{% endblock %}

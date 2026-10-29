@@ -41,5 +41,16 @@
     <p>{{ rutina.descripcion|linebreaksbr }}</p>
 
     {# Hito 4 y 5: aquí van "Editar/Eliminar" (solo el dueño) e "Inscribirme" (otros usuarios con sesión). #}
+
+    {% if user == rutina.entrenador %}
+  <p>
+    <a class="boton boton-primario" href="{% url 'app_gim:rutina_editar' rutina.pk %}">Editar</a>
+    <form method="post" action="{% url 'app_gim:rutina_eliminar' rutina.pk %}" style="display:inline"
+          onsubmit="return confirm('¿Seguro que quieres eliminar esta rutina? No se puede deshacer.');">
+      {% csrf_token %}
+      <button type="submit" class="boton">Eliminar</button>
+    </form>
+  </p>
+{% endif %}
   </article>
 {% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'app_gim/base.html' %}
+{% block titulo %}Mi cuenta · Gimnasio de Barrio{% endblock %}
+{% block contenido %}
+  <h1>Mi cuenta</h1>
+
+  <h2>Mis datos</h2>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ perfil_form.as_p }}
+    <button class="boton boton-primario" type="submit" name="guardar_datos">Guardar datos</button>
+  </form>
+
+  <h2>Cambiar contraseña</h2>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ clave_form.as_p }}
+    <button class="boton boton-primario" type="submit" name="cambiar_clave">Cambiar contraseña</button>
+  </form>
+{% endblock %}

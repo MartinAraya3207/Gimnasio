@@ -1,0 +1,11 @@
+{% extends 'app_gim/base.html' %}
+{% block titulo %}{{ titulo }} · Gimnasio de Barrio{% endblock %}
+{% block contenido %}
+  <p><a href="{% url 'app_gim:listado' %}">Volver al listado</a></p>
+  <h1>{{ titulo }}</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="boton boton-primario" type="submit">Guardar</button>
+  </form>
+{% endblock %}

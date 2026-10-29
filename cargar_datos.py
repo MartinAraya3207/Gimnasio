@@ -1,3 +1,6 @@
+# Cómo ejecutarlo (desde la carpeta donde está manage.py):
+#   python manage.py shell -c "exec(open('cargar_datos.py', encoding='utf-8').read())"
+
 from django.contrib.auth.models import User
 from app_gim.models import Disciplina, Equipamiento, Rutina, Inscripcion
 
@@ -59,3 +62,8 @@ for rutina, socio, estado in inscripciones:
         rutina=rutina, socio=socio, defaults={'estado': estado})
 
 print('Datos cargados correctamente')
+
+# Verificación de permisos: (usuario, is_staff, is_superuser)
+# Los usuarios de prueba y los registrados por la web deben salir con False, False.
+# Solo el superusuario (creado con createsuperuser) debe salir con True, True.
+print(list(User.objects.values_list('username', 'is_staff', 'is_superuser')))
