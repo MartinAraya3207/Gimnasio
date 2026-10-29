@@ -3,6 +3,7 @@
 {% block contenido %}
   <p><a href="{% url 'app_gim:listado' %}">Volver al listado</a></p>
   <h1>{{ titulo }}</h1>
+  <p class="suave">¿No está la disciplina que buscas? <a href="{% url 'app_gim:disciplinas' %}" target="_blank" rel="noopener">Créala aquí</a> (se abre en otra pestaña) y luego recarga esta página.</p>
   <form method="post" novalidate>
     {% csrf_token %}
     {{ form.as_p }}

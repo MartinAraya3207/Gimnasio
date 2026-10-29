@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -6,10 +7,10 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, render
 
-from app_gim.forms import PerfilForm, RegistroForm, RutinaForm
+from app_gim.forms import DisciplinaForm, PerfilForm, RegistroForm, RutinaForm
 
 from .models import Disciplina, Inscripcion, Rutina
 
@@ -135,6 +136,16 @@ def mi_cuenta(request):
 
 
 # ---------- CRUD de rutinas ----------
+def _rutina_del_dueno(request, pk):
+    """Devuelve la rutina solo si el usuario con sesión es su dueño.
+
+    - La rutina no existe                -> 404 (no encontrada)
+    - Existe pero es de otro entrenador  -> 403 (sin permiso)
+    """
+    rutina = get_object_or_404(Rutina, pk=pk)
+    if rutina.entrenador_id != request.user.id:
+        raise PermissionDenied
+    return rutina
 
 @login_required
 def rutina_crear(request):
@@ -153,7 +164,7 @@ def rutina_crear(request):
 
 @login_required
 def rutina_editar(request, pk):
-    rutina = get_object_or_404(Rutina, pk=pk, entrenador=request.user)
+    rutina = _rutina_del_dueno(request, pk)
     form = RutinaForm(request.POST or None, instance=rutina, entrenador=request.user)
     if form.is_valid():
         form.save()
@@ -167,7 +178,30 @@ def rutina_editar(request, pk):
 @login_required
 @require_POST
 def rutina_eliminar(request, pk):
-    rutina = get_object_or_404(Rutina, pk=pk, entrenador=request.user)
+    rutina = _rutina_del_dueno(request, pk)
     rutina.delete()
     messages.success(request, 'Rutina eliminada.')
     return redirect('app_gim:listado')
+
+
+
+
+@login_required
+def mis_rutinas(request):
+    rutinas = Rutina.objects.filter(entrenador=request.user).select_related('disciplina')
+    return render(request, 'app_gim/mis_rutinas.html', {'rutinas': rutinas})
+
+
+# ---------- Catálogo de disciplinas ----------
+
+@login_required
+def disciplinas(request):
+    form = DisciplinaForm(request.POST or None)
+    if form.is_valid():
+        disciplina = form.save()
+        messages.success(request, f'Disciplina "{disciplina.nombre}" creada. Ya puedes elegirla en tus rutinas.')
+        return redirect('app_gim:disciplinas')
+    if request.method == 'POST':
+        messages.error(request, 'No se pudo crear la disciplina. Revisa los errores.')
+    lista = Disciplina.objects.annotate(total_rutinas=Count('rutinas'))
+    return render(request, 'app_gim/disciplinas.html', {'form': form, 'disciplinas': lista})

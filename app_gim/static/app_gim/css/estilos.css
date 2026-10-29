@@ -119,3 +119,14 @@ input, select { font: inherit; padding: .5rem .6rem; border: 1px solid var(--lin
 @media (max-width: 34rem) {
   .contadores { grid-template-columns: 1fr; }
 }
+/* Hito 4: tablas, acciones y bloques de formulario */
+.tabla-contenedor { overflow-x: auto; background: var(--superficie); border: 1px solid var(--linea); border-radius: 6px; margin-bottom: 1.5rem; }
+.tabla { width: 100%; border-collapse: collapse; }
+.tabla th, .tabla td { text-align: left; padding: .7rem 1rem; border-bottom: 1px solid var(--linea); vertical-align: middle; }
+.tabla tbody tr:last-child td { border-bottom: 0; }
+.tabla th { color: var(--suave); font-size: .85rem; font-weight: 600; }
+.tabla .boton { border: 1px solid var(--linea); padding: .35rem .8rem; font-size: .9rem; }
+.acciones { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; }
+.acciones form { margin: 0; }
+.boton-peligro { color: var(--avanzado); border-color: var(--avanzado) !important; }
+.bloque { background: var(--superficie); border: 1px solid var(--linea); border-radius: 6px; padding: 1rem; margin-bottom: 1.5rem; }

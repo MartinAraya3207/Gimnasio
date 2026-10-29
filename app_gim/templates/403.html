@@ -1,0 +1,12 @@
+{% extends 'app_gim/base.html' %}
+
+{% block titulo %}Sin permiso · Gimnasio de Barrio{% endblock %}
+
+{% block contenido %}
+  <h1>Sin permiso</h1>
+  <p>Solo el entrenador que publicó una rutina puede editarla o eliminarla.</p>
+  <p class="acciones">
+    <a href="{% url 'app_gim:listado' %}">Ver todas las rutinas</a>
+    {% if user.is_authenticated %}<a href="{% url 'app_gim:mis_rutinas' %}">Ir a mis rutinas</a>{% endif %}
+  </p>
+{% endblock %}

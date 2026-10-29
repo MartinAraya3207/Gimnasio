@@ -5,7 +5,9 @@
     <a href="{% url 'app_gim:listado' %}">Rutinas</a>
 
     {% if user.is_authenticated %}
+      <a href="{% url 'app_gim:mis_rutinas' %}">Mis rutinas</a>
       <a href="{% url 'app_gim:rutina_crear' %}">Nueva rutina</a>
+      <a href="{% url 'app_gim:disciplinas' %}">Disciplinas</a>
       <a href="{% url 'app_gim:mi_cuenta' %}">Mi cuenta</a>
       <span class="usuario">{{ user.username }}</span>
       <form method="post" action="{% url 'app_gim:salida' %}" style="display:inline">

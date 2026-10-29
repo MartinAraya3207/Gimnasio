@@ -16,6 +16,8 @@ urlpatterns = [
     path('rutinas/nueva/', views.rutina_crear, name='rutina_crear'),
     path('rutinas/<int:pk>/editar/', views.rutina_editar, name='rutina_editar'),
     path('rutinas/<int:pk>/eliminar/', views.rutina_eliminar, name='rutina_eliminar'),
+        path('mis-rutinas/', views.mis_rutinas, name='mis_rutinas'),
+    path('disciplinas/', views.disciplinas, name='disciplinas'),
 ]
 
 

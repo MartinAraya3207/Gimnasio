@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Rutina
+from .models import Disciplina, Rutina
 
 
 def _email_en_uso(email, excluir_pk=None):
@@ -58,6 +58,13 @@ class RutinaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.entrenador = entrenador
 
+        # Regla del caso: hasta cinco etiquetas (equipamientos) por rutina
+    def clean_equipamientos(self):
+        equipamientos = self.cleaned_data['equipamientos']
+        if len(equipamientos) > 5:
+            raise forms.ValidationError('Puedes elegir como máximo 5 equipamientos.')
+        return equipamientos
+
     # Validación propia 1: título de al menos 5 caracteres
     def clean_titulo(self):
         titulo = self.cleaned_data['titulo'].strip()
@@ -79,3 +86,21 @@ class RutinaForm(forms.ModelForm):
         if datos.get('nivel') == Rutina.Nivel.AVANZADO and (datos.get('duracion_minutos') or 99) < 30:
             self.add_error('duracion_minutos', 'Una rutina avanzada debe durar al menos 30 minutos.')
         return datos
+    
+
+class DisciplinaForm(forms.ModelForm):
+    class Meta:
+        model = Disciplina
+        fields = ('nombre',)
+        labels = {'nombre': 'Nombre de la disciplina'}
+
+    def clean_nombre(self):
+        # Quita espacios sobrantes: "  Yoga   suave " -> "Yoga suave"
+        nombre = ' '.join(self.cleaned_data['nombre'].split())
+        if len(nombre) < 3:
+            raise forms.ValidationError('El nombre debe tener al menos 3 caracteres.')
+        # iexact: "yoga" y "Yoga" cuentan como la misma disciplina
+        repetida = Disciplina.objects.filter(nombre__iexact=nombre).exclude(pk=self.instance.pk)
+        if repetida.exists():
+            raise forms.ValidationError('Ya existe una disciplina con ese nombre.')
+        return nombre

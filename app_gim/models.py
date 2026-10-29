@@ -50,7 +50,13 @@ class Rutina(models.Model):
         on_delete=models.CASCADE,
         related_name='rutinas',
     )
-    # Catálogo opcional
+    # Catálogo opcional.
+    # Si se elimina una disciplina, las rutinas NO se borran: quedan "sin disciplina".
+    # Justificación (req. 12): el catálogo es opcional en el caso, así que una rutina
+    # puede existir sin él. CASCADE borraría rutinas (y sus inscripciones) de otros
+    # entrenadores por eliminar un dato de catálogo. PROTECT impediría borrar una
+    # disciplina mientras alguna rutina la use, incluso si está mal escrita.
+    # SET_NULL conserva el trabajo de los entrenadores y respeta la regla del caso.
     disciplina = models.ForeignKey(
         Disciplina,
         on_delete=models.SET_NULL,

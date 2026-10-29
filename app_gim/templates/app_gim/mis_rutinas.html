@@ -1,0 +1,42 @@
+{% extends 'app_gim/base.html' %}
+
+{% block titulo %}Mis rutinas · Gimnasio de Barrio{% endblock %}
+
+{% block contenido %}
+  <h1>Mis rutinas</h1>
+  <p><a class="boton boton-primario" href="{% url 'app_gim:rutina_crear' %}">Nueva rutina</a></p>
+
+  {% if rutinas %}
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr><th>Título</th><th>Disciplina</th><th>Nivel</th><th>Duración</th><th>Cupos</th><th>Publicada</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+          {% for r in rutinas %}
+            <tr>
+              <td><a href="{% url 'app_gim:detalle' r.pk %}">{{ r.titulo }}</a></td>
+              <td>{% if r.disciplina %}{{ r.disciplina.nombre }}{% else %}Sin disciplina{% endif %}</td>
+              <td><span class="nivel nivel-{{ r.nivel }}">{{ r.get_nivel_display }}</span></td>
+              <td>{{ r.duracion_minutos }} min</td>
+              <td>{{ r.cupos }}</td>
+              <td>{{ r.fecha_creacion|date:"d/m/Y" }}</td>
+              <td>
+                <div class="acciones">
+                  <a class="boton" href="{% url 'app_gim:rutina_editar' r.pk %}">Editar</a>
+                  <form method="post" action="{% url 'app_gim:rutina_eliminar' r.pk %}"
+                        onsubmit="return confirm('¿Seguro que quieres eliminar esta rutina? No se puede deshacer.');">
+                    {% csrf_token %}
+                    <button type="submit" class="boton boton-peligro">Eliminar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="vacio">Todavía no has publicado rutinas. Crea la primera con el botón "Nueva rutina".</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'app_gim/base.html' %}
+
+{% block titulo %}Disciplinas · Gimnasio de Barrio{% endblock %}
+
+{% block contenido %}
+  <h1>Disciplinas</h1>
+  <p class="suave">Las disciplinas agrupan las rutinas (funcional, yoga, spinning…). Revisa que no exista antes de crear una nueva.</p>
+
+  <form method="post" class="bloque" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="boton boton-primario" type="submit">Crear disciplina</button>
+  </form>
+
+  <h2>Disciplinas existentes</h2>
+  {% if disciplinas %}
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead><tr><th>Nombre</th><th>Rutinas</th></tr></thead>
+        <tbody>
+          {% for d in disciplinas %}
+            <tr>
+              <td>{{ d.nombre }}</td>
+              <td>{% if d.total_rutinas %}<a href="{% url 'app_gim:listado' %}?disciplina={{ d.pk }}">{{ d.total_rutinas }}</a>{% else %}0{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="vacio">Todavía no hay disciplinas. Crea la primera con el formulario de arriba.</p>
+  {% endif %}
+{% endblock %}
