@@ -1,9 +1,155 @@
-"para el python manage.py shell"
+# Gimnasio de Barrio
 
-"from django.contrib.auth.models import User"
-"from app_gim.models import Disciplina, Equipamiento, Rutina, Inscripcion"
+Proyecto integrador Unidad 2 · Caso 1 "Gimnasio y rutinas"
+Programación Back End (TI3041) · Django + MySQL
 
+Los entrenadores publican rutinas de ejercicio y los socios se inscriben en las
+de otros entrenadores. El entrenador confirma o rechaza las solicitudes que recibe.
 
+---
 
+> Todos los comandos se ejecutan desde la carpeta que contiene `manage.py`.
 
-# python manage.py shell -c "exec(open('cargar_datos.py', encoding='utf-8').read())"
+---
+
+## 1. Crear el entorno virtual (recomendado)
+
+Windows (PowerShell o CMD):
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+Mac / Linux:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Cuando está activo, verás `(venv)` al inicio de la línea de la terminal.
+
+---
+
+## 2. Instalar las dependencias
+
+El archivo `requirements.txt` contiene lo necesario:
+
+```
+django<5.2
+mysqlclient
+```
+
+Instálalo con:
+
+```bash
+pip install -r requirements.txt
+```
+
+- `django<5.2` instala Django 5.1, la versión con la que se hizo el proyecto.
+- `mysqlclient` es el conector que permite a Django hablar con MySQL.
+
+---
+
+## 3. Crear la base de datos en MySQL
+
+Abre MySQL Workbench (o la consola de MySQL) y ejecuta:
+
+```sql
+CREATE DATABASE gimnasio_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+Django crea las tablas solo (paso 5), pero la base de datos vacía debe existir antes.
+
+---
+
+## 4. Configurar la conexión
+
+Abre `Gimnasio/settings.py` y revisa la sección `DATABASES`:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'gimnasio_db',
+        'USER': 'root',
+        'PASSWORD': '1234',      
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
+```
+
+Cambia `USER` y `PASSWORD` por los de tu MySQL si son distintos.
+
+---
+
+## 5. Crear las tablas (migraciones)
+
+```bash
+python manage.py migrate
+```
+
+Esto crea todas las tablas: rutinas, disciplinas, equipamientos, inscripciones
+y las tablas de usuarios de Django.
+
+---
+
+## 6. Cargar los datos de prueba
+
+```bash
+python manage.py shell -c "exec(open('cargar_datos.py', encoding='utf-8').read())"
+```
+
+Carga 3 usuarios, 10 rutinas, 3 disciplinas, 5 equipamientos y 5 inscripciones
+en distintos estados. Si todo sale bien, verás `Datos cargados correctamente`.
+
+Usuarios de prueba (todos con contraseña `1234`):
+
+| Usuario | Rol de ejemplo |
+|---|---|
+| `entrenador1` | Dueño de las rutinas 1 a 5 |
+| `entrenador2` | Dueño de las rutinas 6 a 10 |
+| `socio1` | Tiene inscripciones pendiente, confirmada y rechazada |
+
+---
+
+## 7. Crear un administrador (opcional)
+
+Para entrar al panel `/admin/`:
+
+```bash
+python manage.py createsuperuser
+```
+
+---
+
+## 8. Ejecutar el servidor
+
+```bash
+python manage.py runserver
+```
+
+Abre en el navegador: http://127.0.0.1:8000/
+
+Para detener el servidor: `Ctrl + C`.
+
+---
+
+## Páginas del sitio
+
+| Dirección | Qué es | Quién entra |
+|---|---|---|
+| `/` | Portada con últimas rutinas y contadores | Todos |
+| `/rutinas/` | Listado con búsqueda, filtro y paginación | Todos |
+| `/rutinas/<id>/` | Detalle de una rutina e inscripción | Todos (inscribirse requiere sesión) |
+| `/registro/` · `/ingreso/` | Crear cuenta e iniciar sesión | Visitantes |
+| `/mi-cuenta/` | Datos personales y cambio de contraseña | Con sesión |
+| `/mis-rutinas/` | Rutinas propias (editar / eliminar) | Con sesión |
+| `/rutinas/nueva/` | Crear una rutina | Con sesión |
+| `/disciplinas/` | Crear y ver disciplinas | Con sesión |
+| `/mis-solicitudes/` | Mis inscripciones; cancelar las pendientes | Con sesión |
+| `/solicitudes-recibidas/` | Solicitudes a mis rutinas; confirmar o rechazar | Con sesión |
+| `/admin/` | Panel de administración | Solo staff |
+
