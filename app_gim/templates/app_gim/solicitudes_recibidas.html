@@ -1,0 +1,47 @@
+{% extends 'app_gim/base.html' %}
+{% block titulo %}Solicitudes recibidas · Gimnasio de Barrio{% endblock %}
+{% block contenido %}
+  <h1>Solicitudes recibidas</h1>
+
+  <h2>Pendientes</h2>
+  {% if pendientes %}
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead><tr><th>Rutina</th><th>Socio</th><th>Comentario</th><th>Fecha</th><th>Acciones</th></tr></thead>
+        <tbody>
+          {% for s in pendientes %}
+            <tr>
+              <td>{{ s.rutina.titulo }} ({{ s.rutina.cupos_libres }} cupos libres)</td>
+              <td>{{ s.socio.username }}</td>
+              <td>{{ s.comentario|default:"—" }}</td>
+              <td>{{ s.fecha|date:"d/m/Y" }}</td>
+              <td>
+                <div class="acciones">
+                  <form method="post" action="{% url 'app_gim:solicitud_resolver' s.pk 'confirmar' %}">
+                    {% csrf_token %}<button type="submit" class="boton boton-primario">Confirmar</button>
+                  </form>
+                  <form method="post" action="{% url 'app_gim:solicitud_resolver' s.pk 'rechazar' %}">
+                    {% csrf_token %}<button type="submit" class="boton boton-peligro">Rechazar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="vacio">No tienes solicitudes pendientes.</p>
+  {% endif %}
+
+  <h2>Ya resueltas</h2>
+  {% if resueltas %}
+    <ul>
+      {% for s in resueltas %}
+        <li>{{ s.socio.username }} · {{ s.rutina.titulo }} · {{ s.get_estado_display }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="vacio">Todavía no has resuelto ninguna.</p>
+  {% endif %}
+{% endblock %}

@@ -74,6 +74,12 @@ class Rutina(models.Model):
     def __str__(self):
         return self.titulo
 
+    def cupos_ocupados(self):
+        return self.inscripciones.filter(estado=Inscripcion.Estado.CONFIRMADA).count()
+
+    def cupos_libres(self):
+        return self.cupos - self.cupos_ocupados()
+
 
 class Inscripcion(models.Model):
     class Estado(models.TextChoices):

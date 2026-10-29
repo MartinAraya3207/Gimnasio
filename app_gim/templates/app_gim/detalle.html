@@ -24,7 +24,7 @@
       </div>
       <div><dt>Entrenador</dt><dd>{{ rutina.entrenador.get_full_name|default:rutina.entrenador.username }}</dd></div>
       <div><dt>Duración</dt><dd>{{ rutina.duracion_minutos }} minutos</dd></div>
-      <div><dt>Cupos</dt><dd>{{ rutina.cupos }}</dd></div>
+      <div><dt>Cupos</dt><dd>{{ rutina.cupos_libres }} libres de {{ rutina.cupos }}</dd></div>
       <div><dt>Publicada</dt><dd>{{ rutina.fecha_creacion|date:"d/m/Y" }}</dd></div>
     </dl>
 
@@ -40,17 +40,28 @@
     <h2>Descripción</h2>
     <p>{{ rutina.descripcion|linebreaksbr }}</p>
 
-    {# Hito 4 y 5: aquí van "Editar/Eliminar" (solo el dueño) e "Inscribirme" (otros usuarios con sesión). #}
+    {# Inscripción: solo usuarios con sesión que NO son el dueño #}
+    {% if user.is_authenticated and user != rutina.entrenador %}
+      <h2>Inscripción</h2>
+      <form method="post" action="{% url 'app_gim:inscribirse' rutina.pk %}">
+        {% csrf_token %}
+        <p><textarea name="comentario" rows="3" placeholder="Comentario para el entrenador (opcional)"></textarea></p>
+        <button type="submit" class="boton boton-primario">Solicitar inscripción</button>
+      </form>
+    {% elif not user.is_authenticated %}
+      <p><a href="{% url 'app_gim:ingreso' %}?next={{ request.path }}">Ingresa</a> para solicitar inscripción.</p>
+    {% endif %}
 
+    {# Editar / Eliminar: solo el dueño #}
     {% if user == rutina.entrenador %}
-  <p>
-    <a class="boton boton-primario" href="{% url 'app_gim:rutina_editar' rutina.pk %}">Editar</a>
-    <form method="post" action="{% url 'app_gim:rutina_eliminar' rutina.pk %}" style="display:inline"
-          onsubmit="return confirm('¿Seguro que quieres eliminar esta rutina? No se puede deshacer.');">
-      {% csrf_token %}
-      <button type="submit" class="boton">Eliminar</button>
-    </form>
-  </p>
-{% endif %}
+      <div>
+        <a class="boton boton-primario" href="{% url 'app_gim:rutina_editar' rutina.pk %}">Editar</a>
+        <form method="post" action="{% url 'app_gim:rutina_eliminar' rutina.pk %}" style="display:inline"
+              onsubmit="return confirm('¿Seguro que quieres eliminar esta rutina? No se puede deshacer.');">
+          {% csrf_token %}
+          <button type="submit" class="boton">Eliminar</button>
+        </form>
+      </div>
+    {% endif %}
   </article>
 {% endblock %}

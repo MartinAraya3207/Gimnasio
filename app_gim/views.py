@@ -8,7 +8,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, render
+from django.db import transaction
+from django.http import Http404
 
 from app_gim.forms import DisciplinaForm, PerfilForm, RegistroForm, RutinaForm
 
@@ -184,12 +185,94 @@ def rutina_eliminar(request, pk):
     return redirect('app_gim:listado')
 
 
-
-
 @login_required
 def mis_rutinas(request):
     rutinas = Rutina.objects.filter(entrenador=request.user).select_related('disciplina')
     return render(request, 'app_gim/mis_rutinas.html', {'rutinas': rutinas})
+
+
+# ---------- Inscripciones y solicitudes ----------
+
+@login_required
+@require_POST
+def inscribirse(request, pk):
+    with transaction.atomic():
+        rutina = get_object_or_404(Rutina.objects.select_for_update(), pk=pk)
+
+        if rutina.entrenador_id == request.user.id:
+            messages.error(request, 'No puedes inscribirte en tu propia rutina.')
+        elif Inscripcion.objects.filter(rutina=rutina, socio=request.user).exists():
+            messages.error(request, 'Ya tienes una solicitud para esta rutina. Revisa "Mis solicitudes".')
+        elif rutina.cupos_libres() <= 0:
+            messages.error(request, 'Esta rutina ya no tiene cupos disponibles.')
+        else:
+            Inscripcion.objects.create(
+                rutina=rutina,
+                socio=request.user,
+                comentario=request.POST.get('comentario', '').strip(),
+            )
+            messages.success(request, 'Solicitud enviada. Quedó pendiente hasta que el entrenador responda.')
+    return redirect('app_gim:detalle', pk=pk)
+
+
+@login_required
+def mis_solicitudes(request):
+    solicitudes = (Inscripcion.objects
+                   .filter(socio=request.user)
+                   .select_related('rutina', 'rutina__entrenador'))
+    return render(request, 'app_gim/mis_solicitudes.html', {'solicitudes': solicitudes})
+
+
+@login_required
+@require_POST
+def solicitud_cancelar(request, pk):
+    insc = get_object_or_404(Inscripcion, pk=pk)
+    if insc.socio_id != request.user.id:
+        raise PermissionDenied
+    if insc.estado != Inscripcion.Estado.PENDIENTE:
+        messages.error(request, 'Solo puedes cancelar solicitudes pendientes.')
+    else:
+        insc.delete()
+        messages.success(request, 'Solicitud cancelada.')
+    return redirect('app_gim:mis_solicitudes')
+
+
+@login_required
+def solicitudes_recibidas(request):
+    todas = (Inscripcion.objects
+             .filter(rutina__entrenador=request.user)
+             .select_related('rutina', 'socio'))
+    return render(request, 'app_gim/solicitudes_recibidas.html', {
+        'pendientes': todas.filter(estado=Inscripcion.Estado.PENDIENTE),
+        'resueltas': todas.exclude(estado=Inscripcion.Estado.PENDIENTE),
+    })
+
+
+@login_required
+@require_POST
+def solicitud_resolver(request, pk, accion):
+    if accion not in ('confirmar', 'rechazar'):
+        raise Http404
+    with transaction.atomic():
+        insc = get_object_or_404(Inscripcion.objects.select_related('rutina'), pk=pk)
+        if insc.rutina.entrenador_id != request.user.id:
+            raise PermissionDenied
+        rutina = Rutina.objects.select_for_update().get(pk=insc.rutina_id)
+
+        if insc.estado != Inscripcion.Estado.PENDIENTE:
+            messages.error(request, 'Esta solicitud ya fue resuelta.')
+        elif accion == 'confirmar':
+            if rutina.cupos_libres() <= 0:
+                messages.error(request, 'No quedan cupos para confirmar esta solicitud.')
+            else:
+                insc.estado = Inscripcion.Estado.CONFIRMADA
+                insc.save()
+                messages.success(request, f'Confirmaste a {insc.socio.username}.')
+        else:
+            insc.estado = Inscripcion.Estado.RECHAZADA
+            insc.save()
+            messages.success(request, f'Rechazaste a {insc.socio.username}.')
+    return redirect('app_gim:solicitudes_recibidas')
 
 
 # ---------- Catálogo de disciplinas ----------

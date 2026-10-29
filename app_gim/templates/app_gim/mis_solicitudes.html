@@ -1,0 +1,33 @@
+{% extends 'app_gim/base.html' %}
+{% block titulo %}Mis solicitudes · Gimnasio de Barrio{% endblock %}
+{% block contenido %}
+  <h1>Mis solicitudes</h1>
+  {% if solicitudes %}
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead><tr><th>Rutina</th><th>Entrenador</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead>
+        <tbody>
+          {% for s in solicitudes %}
+            <tr>
+              <td><a href="{% url 'app_gim:detalle' s.rutina.pk %}">{{ s.rutina.titulo }}</a></td>
+              <td>{{ s.rutina.entrenador.username }}</td>
+              <td>{{ s.get_estado_display }}</td>
+              <td>{{ s.fecha|date:"d/m/Y" }}</td>
+              <td>
+                {% if s.estado == 'pendiente' %}
+                  <form method="post" action="{% url 'app_gim:solicitud_cancelar' s.pk %}"
+                        onsubmit="return confirm('¿Cancelar esta solicitud?');">
+                    {% csrf_token %}
+                    <button type="submit" class="boton boton-peligro">Cancelar</button>
+                  </form>
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="vacio">Aún no has solicitado ninguna rutina. <a href="{% url 'app_gim:listado' %}">Ver rutinas</a></p>
+  {% endif %}
+{% endblock %}

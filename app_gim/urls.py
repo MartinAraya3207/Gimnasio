@@ -16,8 +16,13 @@ urlpatterns = [
     path('rutinas/nueva/', views.rutina_crear, name='rutina_crear'),
     path('rutinas/<int:pk>/editar/', views.rutina_editar, name='rutina_editar'),
     path('rutinas/<int:pk>/eliminar/', views.rutina_eliminar, name='rutina_eliminar'),
-        path('mis-rutinas/', views.mis_rutinas, name='mis_rutinas'),
+    path('mis-rutinas/', views.mis_rutinas, name='mis_rutinas'),
     path('disciplinas/', views.disciplinas, name='disciplinas'),
+    path('rutinas/<int:pk>/inscribirse/', views.inscribirse, name='inscribirse'),
+    path('mis-solicitudes/', views.mis_solicitudes, name='mis_solicitudes'),
+    path('mis-solicitudes/<int:pk>/cancelar/', views.solicitud_cancelar, name='solicitud_cancelar'),
+    path('solicitudes-recibidas/', views.solicitudes_recibidas, name='solicitudes_recibidas'),
+    path('solicitudes-recibidas/<int:pk>/<str:accion>/', views.solicitud_resolver, name='solicitud_resolver'),
 ]
 
 
