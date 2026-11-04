@@ -24,7 +24,6 @@
               <td>{% if d.total_rutinas %}<a href="{% url 'app_gim:listado' %}?disciplina={{ d.pk }}">{{ d.total_rutinas }}</a>{% else %}0{% endif %}</td>
               {% if user.is_superuser %}
                 <td>
-                  <a href="{% url 'app_gim:disciplina_editar' d.pk %}">Editar</a>
                   <form method="post" action="{% url 'app_gim:disciplina_eliminar' d.pk %}" style="display:inline"
                         onsubmit="return confirm('¿Seguro que quieres eliminar esta disciplina? No se puede deshacer.');">
                     {% csrf_token %}
