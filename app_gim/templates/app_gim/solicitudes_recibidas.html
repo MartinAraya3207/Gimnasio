@@ -22,13 +22,13 @@
                   </form>
                   <form method="post" action="{% url 'app_gim:solicitud_resolver' s.pk 'rechazar' %}">
                     {% csrf_token %}<button type="submit" class="boton boton-peligro">Rechazar</button>
-                    {% if user.is_superuser %}
-                  <form method="post" action="{% url 'app_gim:solicitud_cancelar' s.pk %}"
-                  onsubmit="return confirm('¿Cancelar (borrar) esta solicitud?');">
-                    {% csrf_token %}<button type="submit" class="boton">Cancelar</button>
                   </form>
-                    {% endif %}
-                  </form>
+                  {% if user.is_superuser %}
+                    <form method="post" action="{% url 'app_gim:solicitud_cancelar' s.pk %}"
+                          onsubmit="return confirm('¿Cancelar (borrar) esta solicitud?');">
+                      {% csrf_token %}<button type="submit" class="boton">Cancelar</button>
+                    </form>
+                  {% endif %}
                 </div>
               </td>
             </tr>
