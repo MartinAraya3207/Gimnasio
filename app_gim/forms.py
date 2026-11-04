@@ -2,8 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Disciplina, Rutina
-
+from .models import Disciplina, Equipamiento, Rutina
 
 def _email_en_uso(email, excluir_pk=None):
     qs = User.objects.filter(email__iexact=email)
@@ -53,6 +52,12 @@ class RutinaForm(forms.ModelForm):
         fields = ('titulo', 'descripcion', 'duracion_minutos', 'cupos',
                   'nivel', 'disciplina', 'equipamientos')
         widgets = {'equipamientos': forms.CheckboxSelectMultiple}
+        labels = {
+            'titulo': 'Título',
+            'descripcion': 'Descripción',
+            'duracion_minutos': 'Duración (minutos)',
+            'equipamientos': 'Equipamiento',
+}
 
     def __init__(self, *args, entrenador=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -103,4 +108,19 @@ class DisciplinaForm(forms.ModelForm):
         repetida = Disciplina.objects.filter(nombre__iexact=nombre).exclude(pk=self.instance.pk)
         if repetida.exists():
             raise forms.ValidationError('Ya existe una disciplina con ese nombre.')
+        return nombre
+
+class EquipamientoForm(forms.ModelForm):
+    class Meta:
+        model = Equipamiento
+        fields = ('nombre',)
+        labels = {'nombre': 'Nombre del equipamiento'}
+
+    def clean_nombre(self):
+        nombre = ' '.join(self.cleaned_data['nombre'].split())
+        if len(nombre) < 3:
+            raise forms.ValidationError('El nombre debe tener al menos 3 caracteres.')
+        repetido = Equipamiento.objects.filter(nombre__iexact=nombre).exclude(pk=self.instance.pk)
+        if repetido.exists():
+            raise forms.ValidationError('Ya existe un equipamiento con ese nombre.')
         return nombre

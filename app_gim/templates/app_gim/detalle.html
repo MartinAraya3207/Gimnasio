@@ -53,8 +53,8 @@
     {% endif %}
 
     {# Editar / Eliminar: solo el dueño #}
-    {% if user == rutina.entrenador %}
-      <div>
+    {% if user == rutina.entrenador or user.is_superuser %}
+      <div> 
         <a class="boton boton-primario" href="{% url 'app_gim:rutina_editar' rutina.pk %}">Editar</a>
         <form method="post" action="{% url 'app_gim:rutina_eliminar' rutina.pk %}" style="display:inline"
               onsubmit="return confirm('¿Seguro que quieres eliminar esta rutina? No se puede deshacer.');">

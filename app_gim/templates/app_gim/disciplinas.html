@@ -16,12 +16,22 @@
   {% if disciplinas %}
     <div class="tabla-contenedor">
       <table class="tabla">
-        <thead><tr><th>Nombre</th><th>Rutinas</th></tr></thead>
+<thead><tr><th>Nombre</th><th>Rutinas</th>{% if user.is_superuser %}<th>Acciones</th>{% endif %}</tr></thead>
         <tbody>
           {% for d in disciplinas %}
             <tr>
               <td>{{ d.nombre }}</td>
               <td>{% if d.total_rutinas %}<a href="{% url 'app_gim:listado' %}?disciplina={{ d.pk }}">{{ d.total_rutinas }}</a>{% else %}0{% endif %}</td>
+              {% if user.is_superuser %}
+                <td>
+                  <a href="{% url 'app_gim:disciplina_editar' d.pk %}">Editar</a>
+                  <form method="post" action="{% url 'app_gim:disciplina_eliminar' d.pk %}" style="display:inline"
+                        onsubmit="return confirm('¿Seguro que quieres eliminar esta disciplina? No se puede deshacer.');">
+                    {% csrf_token %}
+                    <button type="submit" class="boton">Eliminar</button>
+                  </form>
+                </td>
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>

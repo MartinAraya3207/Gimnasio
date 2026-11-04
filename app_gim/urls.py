@@ -23,6 +23,12 @@ urlpatterns = [
     path('mis-solicitudes/<int:pk>/cancelar/', views.solicitud_cancelar, name='solicitud_cancelar'),
     path('solicitudes-recibidas/', views.solicitudes_recibidas, name='solicitudes_recibidas'),
     path('solicitudes-recibidas/<int:pk>/<str:accion>/', views.solicitud_resolver, name='solicitud_resolver'),
+    path('disciplinas/<int:pk>/eliminar/', views.disciplina_eliminar, name='disciplina_eliminar'),
+    path('panel/', views.panel_admin, name='panel_admin'),
+    path('panel/usuarios/', views.usuarios, name='usuarios'),
+    path('panel/usuarios/<int:pk>/activar/', views.usuario_activar, name='usuario_activar'),
+    path('panel/equipamientos/', views.equipamientos, name='equipamientos'),
+    path('panel/equipamientos/<int:pk>/eliminar/', views.equipamiento_eliminar, name='equipamiento_eliminar'),
 ]
 
 

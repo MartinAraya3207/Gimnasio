@@ -1,0 +1,35 @@
+{% extends 'app_gim/base.html' %}
+{% block titulo %}Usuarios · Gimnasio de Barrio{% endblock %}
+{% block contenido %}
+  <p><a href="{% url 'app_gim:panel_admin' %}">Volver al panel</a></p>
+  <h1>Usuarios</h1>
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead>
+        <tr><th>Usuario</th><th>Correo</th><th>Rango</th><th>Rutinas</th><th>Inscripciones</th><th>Estado</th><th>Acciones</th></tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+          <tr>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email|default:"—" }}</td>
+            <td>{% if u.is_superuser %}Administrador{% else %}Miembro{% endif %}</td>
+            <td>{{ u.total_rutinas }}</td>
+            <td>{{ u.total_inscripciones }}</td>
+            <td>{% if u.is_active %}Activo{% else %}Desactivado{% endif %}</td>
+            <td>
+              {% if not u.is_superuser %}
+                <form method="post" action="{% url 'app_gim:usuario_activar' u.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="boton {% if u.is_active %}boton-peligro{% endif %}">
+                    {% if u.is_active %}Desactivar{% else %}Activar{% endif %}
+                  </button>
+                </form>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

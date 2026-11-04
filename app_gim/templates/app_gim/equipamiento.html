@@ -1,0 +1,35 @@
+{% extends 'app_gim/base.html' %}
+{% block titulo %}Equipamientos · Gimnasio de Barrio{% endblock %}
+{% block contenido %}
+  <p><a href="{% url 'app_gim:panel_admin' %}">Volver al panel</a></p>
+  <h1>Equipamientos</h1>
+
+  <form method="post" class="bloque" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="boton boton-primario" type="submit">Crear equipamiento</button>
+  </form>
+
+  <h2>Equipamientos existentes</h2>
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <thead><tr><th>Nombre</th><th>Rutinas</th><th>Acciones</th></tr></thead>
+      <tbody>
+        {% for e in equipamientos %}
+          <tr>
+            <td>{{ e.nombre }}</td>
+            <td>{{ e.total_rutinas }}</td>
+            <td>
+              <form method="post" action="{% url 'app_gim:equipamiento_eliminar' e.pk %}"
+                    onsubmit="return confirm('¿Eliminar este equipamiento?');">
+                {% csrf_token %}<button type="submit" class="boton boton-peligro">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="vacio">Todavía no hay equipamientos.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

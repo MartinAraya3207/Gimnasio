@@ -1,12 +1,5 @@
 # Gimnasio de Barrio
 
-Proyecto integrador Unidad 2 · Caso 1 "Gimnasio y rutinas"
-Programación Back End (TI3041) · Django + MySQL
-
-Los entrenadores publican rutinas de ejercicio y los socios se inscriben en las
-de otros entrenadores. El entrenador confirma o rechaza las solicitudes que recibe.
-
----
 
 > Todos los comandos se ejecutan desde la carpeta que contiene `manage.py`.
 

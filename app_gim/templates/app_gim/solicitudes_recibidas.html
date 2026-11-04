@@ -1,7 +1,7 @@
 {% extends 'app_gim/base.html' %}
 {% block titulo %}Solicitudes recibidas · Gimnasio de Barrio{% endblock %}
 {% block contenido %}
-  <h1>Solicitudes recibidas</h1>
+<h1>{% if user.is_superuser %}Todas las solicitudes{% else %}Solicitudes recibidas{% endif %}</h1>
 
   <h2>Pendientes</h2>
   {% if pendientes %}
@@ -22,6 +22,12 @@
                   </form>
                   <form method="post" action="{% url 'app_gim:solicitud_resolver' s.pk 'rechazar' %}">
                     {% csrf_token %}<button type="submit" class="boton boton-peligro">Rechazar</button>
+                    {% if user.is_superuser %}
+                  <form method="post" action="{% url 'app_gim:solicitud_cancelar' s.pk %}"
+                  onsubmit="return confirm('¿Cancelar (borrar) esta solicitud?');">
+                    {% csrf_token %}<button type="submit" class="boton">Cancelar</button>
+                  </form>
+                    {% endif %}
                   </form>
                 </div>
               </td>

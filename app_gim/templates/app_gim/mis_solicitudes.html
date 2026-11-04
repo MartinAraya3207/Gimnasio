@@ -11,7 +11,7 @@
             <tr>
               <td><a href="{% url 'app_gim:detalle' s.rutina.pk %}">{{ s.rutina.titulo }}</a></td>
               <td>{{ s.rutina.entrenador.username }}</td>
-              <td>{{ s.get_estado_display }}</td>
+              <td><span class="estado estado-{{ s.estado }}">{{ s.get_estado_display }}</span></td>              
               <td>{{ s.fecha|date:"d/m/Y" }}</td>
               <td>
                 {% if s.estado == 'pendiente' %}

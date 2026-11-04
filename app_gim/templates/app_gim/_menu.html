@@ -10,6 +10,7 @@
       <a href="{% url 'app_gim:solicitudes_recibidas' %}">Solicitudes recibidas</a>
       <a href="{% url 'app_gim:rutina_crear' %}">Nueva rutina</a>
       <a href="{% url 'app_gim:disciplinas' %}">Disciplinas</a>
+      {% if user.is_superuser %}<a href="{% url 'app_gim:panel_admin' %}">Panel admin</a>{% endif %}
       <a href="{% url 'app_gim:mi_cuenta' %}">Mi cuenta</a>
       <span class="usuario">{{ user.username }}</span>
       <form method="post" action="{% url 'app_gim:salida' %}" style="display:inline">

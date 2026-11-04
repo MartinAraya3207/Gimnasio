@@ -1,0 +1,29 @@
+{% extends 'app_gim/base.html' %}
+{% block titulo %}Panel de administración · Gimnasio de Barrio{% endblock %}
+{% block contenido %}
+  <h1>Panel de administración</h1>
+
+  <dl class="contadores">
+    <div><dt>Usuarios</dt><dd>{{ total_usuarios }}</dd></div>
+    <div><dt>Rutinas</dt><dd>{{ total_rutinas }}</dd></div>
+    <div><dt>Rutinas sin disciplina</dt><dd>{{ sin_disciplina }}</dd></div>
+    <div><dt>Solicitudes pendientes</dt><dd>{{ pendientes }}</dd></div>
+    <div><dt>Confirmadas</dt><dd>{{ confirmadas }}</dd></div>
+    <div><dt>Rechazadas</dt><dd>{{ rechazadas }}</dd></div>
+  </dl>
+
+  <p class="acciones">
+    <a class="boton boton-primario" href="{% url 'app_gim:usuarios' %}">Gestionar usuarios</a>
+    <a class="boton boton-primario" href="{% url 'app_gim:equipamientos' %}">Gestionar equipamientos</a>
+    <a class="boton boton-primario" href="{% url 'app_gim:disciplinas' %}">Gestionar disciplinas</a>
+    <a class="boton boton-primario" href="{% url 'app_gim:solicitudes_recibidas' %}">Todas las solicitudes</a>
+    <a class="boton" href="{% url 'admin:index' %}">Panel de Django</a>
+  </p>
+
+  <h2>Últimos usuarios registrados</h2>
+  <ul>
+    {% for u in ultimos_usuarios %}
+      <li>{{ u.username }} · {{ u.date_joined|date:"d/m/Y" }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

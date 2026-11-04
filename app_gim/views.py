@@ -1,4 +1,7 @@
+from functools import wraps                                   # NUEVO
+
 from django.contrib import messages
+from django.contrib.auth.models import User                   # NUEVO
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -11,12 +14,23 @@ from django.db.models import Count, Q
 from django.db import transaction
 from django.http import Http404
 
-from app_gim.forms import DisciplinaForm, PerfilForm, RegistroForm, RutinaForm
+from app_gim.forms import (DisciplinaForm, EquipamientoForm, PerfilForm,  
+                           RegistroForm, RutinaForm)
 
-from .models import Disciplina, Inscripcion, Rutina
+from .models import Disciplina, Equipamiento, Inscripcion, Rutina         
 
 RUTINAS_POR_PAGINA = 5
 
+
+def solo_admin(vista):
+    """Exige sesión y rango de administrador (superusuario). Si no: 403."""
+    @wraps(vista)
+    @login_required
+    def envuelta(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            raise PermissionDenied
+        return vista(request, *args, **kwargs)
+    return envuelta
 
 def _rutinas_con_relaciones():
     """Rutinas con todo lo que las páginas necesitan, en pocas consultas.
@@ -138,13 +152,13 @@ def mi_cuenta(request):
 
 # ---------- CRUD de rutinas ----------
 def _rutina_del_dueno(request, pk):
-    """Devuelve la rutina solo si el usuario con sesión es su dueño.
+    """Devuelve la rutina solo si el usuario es su dueño o es administrador.
 
     - La rutina no existe                -> 404 (no encontrada)
-    - Existe pero es de otro entrenador  -> 403 (sin permiso)
+    - Existe pero es de otro entrenador  -> 403 (sin permiso), salvo admin
     """
     rutina = get_object_or_404(Rutina, pk=pk)
-    if rutina.entrenador_id != request.user.id:
+    if rutina.entrenador_id != request.user.id and not request.user.is_superuser:
         raise PermissionDenied
     return rutina
 
@@ -166,7 +180,7 @@ def rutina_crear(request):
 @login_required
 def rutina_editar(request, pk):
     rutina = _rutina_del_dueno(request, pk)
-    form = RutinaForm(request.POST or None, instance=rutina, entrenador=request.user)
+    form = RutinaForm(request.POST or None, instance=rutina, entrenador=rutina.entrenador)
     if form.is_valid():
         form.save()
         messages.success(request, 'Rutina actualizada.')
@@ -227,26 +241,26 @@ def mis_solicitudes(request):
 @require_POST
 def solicitud_cancelar(request, pk):
     insc = get_object_or_404(Inscripcion, pk=pk)
-    if insc.socio_id != request.user.id:
+    es_propia = insc.socio_id == request.user.id
+    if not es_propia and not request.user.is_superuser:
         raise PermissionDenied
     if insc.estado != Inscripcion.Estado.PENDIENTE:
-        messages.error(request, 'Solo puedes cancelar solicitudes pendientes.')
+        messages.error(request, 'Solo se pueden cancelar solicitudes pendientes.')
     else:
         insc.delete()
         messages.success(request, 'Solicitud cancelada.')
-    return redirect('app_gim:mis_solicitudes')
+    return redirect('app_gim:mis_solicitudes' if es_propia else 'app_gim:solicitudes_recibidas')
 
 
 @login_required
 def solicitudes_recibidas(request):
-    todas = (Inscripcion.objects
-             .filter(rutina__entrenador=request.user)
-             .select_related('rutina', 'socio'))
+    todas = Inscripcion.objects.select_related('rutina', 'socio')
+    if not request.user.is_superuser:        # el admin ve las de todos
+        todas = todas.filter(rutina__entrenador=request.user)
     return render(request, 'app_gim/solicitudes_recibidas.html', {
         'pendientes': todas.filter(estado=Inscripcion.Estado.PENDIENTE),
         'resueltas': todas.exclude(estado=Inscripcion.Estado.PENDIENTE),
     })
-
 
 @login_required
 @require_POST
@@ -255,7 +269,7 @@ def solicitud_resolver(request, pk, accion):
         raise Http404
     with transaction.atomic():
         insc = get_object_or_404(Inscripcion.objects.select_related('rutina'), pk=pk)
-        if insc.rutina.entrenador_id != request.user.id:
+        if insc.rutina.entrenador_id != request.user.id and not request.user.is_superuser:
             raise PermissionDenied
         rutina = Rutina.objects.select_for_update().get(pk=insc.rutina_id)
 
@@ -288,3 +302,76 @@ def disciplinas(request):
         messages.error(request, 'No se pudo crear la disciplina. Revisa los errores.')
     lista = Disciplina.objects.annotate(total_rutinas=Count('rutinas'))
     return render(request, 'app_gim/disciplinas.html', {'form': form, 'disciplinas': lista})
+
+@solo_admin
+@require_POST
+def disciplina_eliminar(request, pk):
+    disciplina = get_object_or_404(Disciplina, pk=pk)
+    nombre = disciplina.nombre
+    disciplina.delete()   # las rutinas quedan "sin disciplina" (SET_NULL)
+    messages.success(request, f'Disciplina "{nombre}" eliminada.')
+    return redirect('app_gim:disciplinas')
+
+
+# ---------- Solo administrador ----------
+
+@solo_admin
+def panel_admin(request):
+    por_estado = {f['estado']: f['n']
+                  for f in Inscripcion.objects.values('estado').annotate(n=Count('id'))}
+    contexto = {
+        'total_usuarios': User.objects.count(),
+        'total_rutinas': Rutina.objects.count(),
+        'sin_disciplina': Rutina.objects.filter(disciplina__isnull=True).count(),
+        'pendientes': por_estado.get('pendiente', 0),
+        'confirmadas': por_estado.get('confirmada', 0),
+        'rechazadas': por_estado.get('rechazada', 0),
+        'ultimos_usuarios': User.objects.order_by('-date_joined')[:5],
+    }
+    return render(request, 'app_gim/panel_admin.html', contexto)
+
+
+@solo_admin
+def usuarios(request):
+    lista = User.objects.annotate(
+        total_rutinas=Count('rutinas', distinct=True),
+        total_inscripciones=Count('inscripciones', distinct=True),
+    ).order_by('-date_joined')
+    return render(request, 'app_gim/usuarios.html', {'usuarios': lista})
+
+
+@solo_admin
+@require_POST
+def usuario_activar(request, pk):
+    usuario = get_object_or_404(User, pk=pk)
+    if usuario.is_superuser:
+        messages.error(request, 'No se puede desactivar a un administrador.')
+    else:
+        usuario.is_active = not usuario.is_active
+        usuario.save(update_fields=['is_active'])
+        estado = 'activada' if usuario.is_active else 'desactivada'
+        messages.success(request, f'Cuenta de {usuario.username} {estado}.')
+    return redirect('app_gim:usuarios')
+
+
+@solo_admin
+def equipamientos(request):
+    form = EquipamientoForm(request.POST or None)
+    if form.is_valid():
+        e = form.save()
+        messages.success(request, f'Equipamiento "{e.nombre}" creado.')
+        return redirect('app_gim:equipamientos')
+    if request.method == 'POST':
+        messages.error(request, 'No se pudo crear el equipamiento. Revisa los errores.')
+    lista = Equipamiento.objects.annotate(total_rutinas=Count('rutinas'))
+    return render(request, 'app_gim/equipamientos.html', {'form': form, 'equipamientos': lista})
+
+
+@solo_admin
+@require_POST
+def equipamiento_eliminar(request, pk):
+    e = get_object_or_404(Equipamiento, pk=pk)
+    nombre = e.nombre
+    e.delete()
+    messages.success(request, f'Equipamiento "{nombre}" eliminado.')
+    return redirect('app_gim:equipamientos')

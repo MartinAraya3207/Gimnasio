@@ -1,132 +1,644 @@
+/* ==========================================================================
+   Gimnasio de Barrio · estilos.css
+   Orden: 1 Tokens · 2 Base · 3 Layout · 4 Botones · 5 Formularios
+          6 Componentes · 7 Tablas · 8 Utilidades · 9 Responsive/Accesibilidad
+   ========================================================================== */
+
+
+/* 1. TOKENS
+   -------------------------------------------------------------------------- */
 :root {
-  --fondo: #f2f4f7;
+  color-scheme: light dark;
+
+  /* Superficies y texto */
+  --fondo: #f3f5f8;
   --superficie: #ffffff;
-  --tinta: #18212b;
-  --suave: #5b6673;
-  --linea: #d9dee5;
+  --superficie-2: #eef1f5;
+  --tinta: #121a26;
+  --suave: #566170;
+  --linea: #d5dbe3;
+  --linea-fuerte: #b7c0cc;
+  --borde-campo: #8a95a5;          /* 3:1 sobre blanco: borde de inputs visible */
+
+  /* Marca */
   --primario: #12306b;
-  --primario-claro: #e6ecf8;
-  --basico: #1f7a4d;
-  --intermedio: #9a6700;
-  --avanzado: #b42318;
+  --primario-hover: #0c2250;
+  --sobre-primario: #ffffff;
+  --primario-claro: #e4ebf8;
+  --enlace: #12306b;
+  --foco: #1a5cff;
+  --acento: #ffc61a;               /* amarillo cinta de precaución */
+  --sobre-acento: #121a26;
+  --hero-fondo: #12306b;
+  --hero-texto: #d6e0f7;
+
+  /* Niveles y estados (texto + fondo) */
+  --basico: #17663f;      --basico-fondo: #e3f4ea;
+  --intermedio: #8a5a00;  --intermedio-fondo: #fbf0d2;
+  --avanzado: #a61f14;    --avanzado-fondo: #fde8e6;
+
+  /* Forma y ritmo */
+  --radio: 8px;
+  --radio-lg: 12px;
+  --espacio: 1rem;
+  --ancho-pagina: 62rem;
+  --ancho-form: 34rem;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #0c1220;
+    --superficie: #151d2e;
+    --superficie-2: #1c2640;
+    --tinta: #e8edf6;
+    --suave: #a3afc2;
+    --linea: #27324a;
+    --linea-fuerte: #3a4766;
+    --borde-campo: #6f7d98;
+
+    --primario: #3d6bdb;
+    --primario-hover: #2f5bc7;
+    --primario-claro: #1d2a4a;
+    --enlace: #9db8ff;
+    --foco: #ffc61a;
+    --hero-fondo: #0f1d3d;
+    --hero-texto: #c5d2ef;
+
+    --basico: #6fd49a;      --basico-fondo: #12301f;
+    --intermedio: #f0bf5a;  --intermedio-fondo: #35290c;
+    --avanzado: #ff9a8f;    --avanzado-fondo: #3a1713;
+  }
+}
+
+
+/* 2. BASE
+   -------------------------------------------------------------------------- */
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
   background: var(--fondo);
   color: var(--tinta);
-  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--primario); }
-a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 3px solid #f2a900;
+h1, h2, h3 {
+  margin: 0 0 .75rem;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+h1 { font-size: clamp(1.75rem, 4.5vw, 2.5rem); margin-bottom: 1rem; }
+h2 { font-size: 1.35rem; margin-top: 2.25rem; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; letter-spacing: -.01em; }
+
+p { margin: 0 0 1rem; max-width: 70ch; text-wrap: pretty; }
+
+a {
+  color: var(--enlace);
+  text-underline-offset: .2em;
+  text-decoration-thickness: 1px;
+}
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: 3px solid var(--foco);
   outline-offset: 2px;
 }
 
-h1, h2, h3 { line-height: 1.2; letter-spacing: -0.01em; }
+::selection { background: var(--acento); color: var(--sobre-acento); }
 
-.contenedor { max-width: 62rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
 
-/* Menú */
-.barra {
-  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
-  gap: .5rem 1.5rem; padding: .8rem 1rem;
-  background: var(--superficie); border-bottom: 1px solid var(--linea);
+/* 3. LAYOUT
+   -------------------------------------------------------------------------- */
+.contenedor {
+  flex: 1;
+  width: 100%;                       /* necesario: con flex-column, margin:auto encogería el bloque */
+  max-width: var(--ancho-pagina);
+  margin: 0 auto;
+  padding: 2rem 1rem 3.5rem;
 }
-.marca { font-weight: 800; font-size: 1.1rem; color: var(--tinta); text-decoration: none; }
-.barra nav { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; align-items: center; }
-.barra nav a { text-decoration: none; font-weight: 600; }
-.barra nav a:hover { text-decoration: underline; }
-.usuario { color: var(--suave); }
+.contenedor > h1:first-child { margin-top: 0; }
+
+/* Barra de navegación */
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: .4rem 1.5rem;
+  padding: .6rem 1rem;
+  background: var(--superficie);
+  border-bottom: 1px solid var(--linea);
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -.02em;
+  color: var(--tinta);
+  text-decoration: none;
+}
+.marca::before {                     /* marca: pastilla inclinada, eco de la franja del hero */
+  content: "";
+  width: .55rem;
+  height: 1.3rem;
+  background: var(--acento);
+  border-radius: 2px;
+  transform: skewX(-14deg);
+}
+
+.barra nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .15rem .35rem;
+}
+.barra nav a {
+  padding: .35rem .65rem;
+  border-radius: var(--radio);
+  font-weight: 600;
+  font-size: .95rem;
+  text-decoration: none;
+  color: var(--tinta);
+  white-space: nowrap;
+}
+.barra nav a:hover { background: var(--primario-claro); color: var(--enlace); }
+.barra nav a[aria-current="page"] {
+  color: var(--enlace);
+  background: var(--primario-claro);
+  box-shadow: inset 0 -2px 0 var(--acento);
+}
+.usuario {
+  padding: 0 .5rem;
+  color: var(--suave);
+  font-size: .9rem;
+  white-space: nowrap;
+}
+.barra nav form { margin: 0; flex-shrink: 0; }
+.barra .boton { padding: .35rem .85rem; min-height: 0; font-size: .9rem; }
+
+/* Pie */
+.pie {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: var(--suave);
+  font-size: .85rem;
+  border-top: 1px solid var(--linea);
+  background: var(--superficie);
+}
 
 /* Portada */
-.hero { background: var(--primario); color: #fff; padding: 3.5rem 1rem; }
-.hero-interior { max-width: 62rem; margin: 0 auto; }
-.hero h1 { font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; letter-spacing: -0.025em; max-width: 16ch; margin: 0 0 1rem; }
-.hero p { max-width: 52ch; margin: 0 0 1.5rem; color: #dbe4f7; }
+.hero {
+  position: relative;
+  padding: clamp(3rem, 8vw, 5.5rem) 1rem clamp(3.5rem, 8vw, 6rem);
+  background: var(--hero-fondo);
+  color: #fff;
+}
+.hero::after {                       /* el único gesto llamativo: cinta de precaución */
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: .7rem;
+  background: repeating-linear-gradient(-45deg,
+    var(--acento) 0 .9rem, #121a26 .9rem 1.8rem);
+}
+.hero-interior { max-width: var(--ancho-pagina); margin: 0 auto; }
+.hero h1 {
+  max-width: 18ch;
+  margin: 0 0 1.1rem;
+  font-size: clamp(2.2rem, 7vw, 3.8rem);
+  line-height: 1.02;
+  letter-spacing: -.03em;
+}
+.hero p {
+  max-width: 52ch;
+  margin: 0 0 1.75rem;
+  font-size: 1.1rem;
+  color: var(--hero-texto);
+}
+.hero :focus-visible { outline-color: var(--acento); }
+.hero .boton {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: var(--sobre-acento);
+}
+.hero .boton:hover { background: #ffd54d; border-color: #ffd54d; }
 
 .contadores {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
-  margin: 0 0 2rem; background: var(--linea);
-  border: 1px solid var(--linea); border-radius: 6px; overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin: 0 0 2.5rem;
+  background: var(--linea);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+  overflow: hidden;
 }
-.contadores div { background: var(--superficie); padding: 1rem; display: flex; flex-direction: column-reverse; gap: .35rem; }
+.contadores div {
+  display: flex;
+  flex-direction: column-reverse;   /* número arriba, etiqueta abajo, sin alterar el orden del HTML */
+  gap: .4rem;
+  padding: 1.25rem 1.25rem 1.1rem;
+  background: var(--superficie);
+}
 .contadores dt { color: var(--suave); font-size: .9rem; }
-.contadores dd { margin: 0; font-size: 2.2rem; font-weight: 800; line-height: 1; }
-
-/* Tarjetas */
-.rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; }
-.tarjeta {
-  background: var(--superficie); border: 1px solid var(--linea); border-radius: 6px;
-  padding: 1rem; display: flex; flex-direction: column; gap: .5rem;
+.contadores dd {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--enlace);
 }
-.tarjeta h3 { margin: 0; font-size: 1.1rem; }
-.tarjeta h3 a { color: inherit; text-decoration: none; }
-.tarjeta h3 a:hover { text-decoration: underline; }
 
-.meta { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: 0; padding: 0; list-style: none; color: var(--suave); font-size: .9rem; }
-.nivel { font-weight: 700; }
-.nivel-basico { color: var(--basico); }
-.nivel-intermedio { color: var(--intermedio); }
-.nivel-avanzado { color: var(--avanzado); }
 
-.chips { display: flex; flex-wrap: wrap; gap: .35rem; margin: 0; }
-.chip { display: inline-block; border-radius: 999px; padding: .1rem .65rem; font-size: .8rem; background: var(--primario-claro); color: var(--primario); }
-
-/* Botones y formularios */
+/* 4. BOTONES
+   -------------------------------------------------------------------------- */
 .boton {
-  display: inline-block; padding: .6rem 1.1rem; border: 0; border-radius: 6px;
-  background: #fff; color: var(--primario); font: inherit; font-weight: 700; text-decoration: none; cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  min-height: 2.5rem;
+  padding: .55rem 1.1rem;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  color: var(--enlace);
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, transform .1s;
 }
-.boton-primario { background: var(--primario); color: #fff; }
+.boton:hover { background: var(--primario-claro); text-decoration: none; }
+.boton:active { transform: translateY(1px); }
+.boton:disabled, .boton[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
 
+.boton-primario {
+  background: var(--primario);
+  border-color: var(--primario);
+  color: var(--sobre-primario);
+}
+.boton-primario:hover { background: var(--primario-hover); border-color: var(--primario-hover); }
+
+.boton-peligro {
+  color: var(--avanzado);
+  border-color: var(--avanzado);
+}
+.boton-peligro:hover { background: var(--avanzado-fondo); }
+
+
+/* 5. FORMULARIOS  (cubre form.as_p, errorlist, helptext y checkboxes)
+   -------------------------------------------------------------------------- */
+input, select, textarea {
+  width: 100%;
+  padding: .55rem .7rem;
+  border: 1px solid var(--borde-campo);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  color: var(--tinta);
+  font: inherit;
+  transition: border-color .15s, box-shadow .15s;
+}
+textarea { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
+input::placeholder, textarea::placeholder { color: var(--suave); opacity: .8; }
+input[type="checkbox"], input[type="radio"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  padding: 0;
+  accent-color: var(--primario);
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--foco);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--foco) 30%, transparent);
+}
+
+/* Campos de Django (as_p) */
+form p {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  max-width: var(--ancho-form);
+  margin: 0 0 1.1rem;
+}
+form p label { font-weight: 600; font-size: .92rem; }
+
+.helptext { color: var(--suave); font-size: .82rem; line-height: 1.45; }
+.helptext ul { margin: .2rem 0 0; padding-left: 1.1rem; }
+
+.errorlist {
+  list-style: none;
+  margin: 0;
+  padding: .45rem .75rem;
+  border-left: 3px solid var(--avanzado);
+  border-radius: var(--radio);
+  background: var(--avanzado-fondo);
+  color: var(--avanzado);
+  font-size: .9rem;
+  font-weight: 600;
+}
+input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"],
+p:has(.errorlist) input, p:has(.errorlist) select, p:has(.errorlist) textarea {
+  border-color: var(--avanzado);
+}
+
+/* Lista de checkboxes (equipamientos) */
+form div[id^="id_"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: .35rem .75rem;
+  max-width: var(--ancho-form);
+  margin: 0 0 1.1rem;
+}
+form div[id^="id_"] label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+/* Filtros del listado */
 .filtros {
-  display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: flex-end;
-  background: var(--superficie); border: 1px solid var(--linea); border-radius: 6px;
-  padding: 1rem; margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: .75rem 1rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
 }
-.filtros label { display: flex; flex-direction: column; gap: .25rem; font-size: .9rem; color: var(--suave); }
+.filtros label {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--suave);
+}
+.filtros input, .filtros select { width: auto; min-width: 11rem; font-weight: 400; color: var(--tinta); }
 .filtros .campo-busqueda { flex: 1 1 16rem; }
-input, select { font: inherit; padding: .5rem .6rem; border: 1px solid var(--linea); border-radius: 6px; background: #fff; color: var(--tinta); }
+.filtros .campo-busqueda input { width: 100%; }
 
-.resumen { color: var(--suave); margin: 0 0 1rem; }
+/* Bloque contenedor de formulario (disciplinas) */
+.bloque {
+  margin-bottom: 1.75rem;
+  padding: 1.25rem;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+}
 
-.paginacion { display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem; }
-.inactivo { color: var(--suave); }
 
-/* Detalle */
-.detalle { background: var(--superficie); border: 1px solid var(--linea); border-radius: 6px; padding: 1.5rem; }
-.detalle h1 { margin: 0 0 .25rem; }
-.datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; margin: 1.25rem 0; }
-.datos dt { color: var(--suave); font-size: .85rem; }
-.datos dd { margin: 0; font-weight: 600; }
-.suave { color: var(--suave); }
+/* 6. COMPONENTES
+   -------------------------------------------------------------------------- */
+
+/* Rejilla y tarjetas */
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1rem;
+}
+
+.tarjeta {
+  --nivel-color: var(--linea-fuerte);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  padding: 1.1rem 1.15rem;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-left: 4px solid var(--nivel-color);   /* el nivel se lee en el borde: información, no decoración */
+  border-radius: var(--radio-lg);
+  transition: border-color .15s;
+}
+.tarjeta:has(.nivel-basico)     { --nivel-color: var(--basico); }
+.tarjeta:has(.nivel-intermedio) { --nivel-color: var(--intermedio); }
+.tarjeta:has(.nivel-avanzado)   { --nivel-color: var(--avanzado); }
+.tarjeta:hover { border-top-color: var(--linea-fuerte); border-right-color: var(--linea-fuerte); border-bottom-color: var(--linea-fuerte); }
+
+.tarjeta h3 { margin: 0; font-size: 1.12rem; }
+.tarjeta h3 a { color: var(--tinta); text-decoration: none; }
+.tarjeta h3 a::after { content: ""; position: absolute; inset: 0; }   /* toda la tarjeta es clicable */
+.tarjeta h3 a:hover { text-decoration: underline; }
+.tarjeta:has(h3 a:focus-visible) { outline: 3px solid var(--foco); outline-offset: 2px; }
+.tarjeta h3 a:focus-visible { outline: none; }
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .2rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--suave);
+  font-size: .9rem;
+  max-width: none;
+}
+
+/* Insignias de nivel y de estado */
+.nivel, .estado {
+  display: inline-block;
+  padding: .1rem .65rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 700;
+  line-height: 1.5;
+  background: var(--superficie-2);
+  color: var(--suave);
+}
+.nivel-basico     { background: var(--basico-fondo);     color: var(--basico); }
+.nivel-intermedio { background: var(--intermedio-fondo); color: var(--intermedio); }
+.nivel-avanzado   { background: var(--avanzado-fondo);   color: var(--avanzado); }
+
+/* Uso opcional en tablas: <span class="estado estado-{{ s.estado }}"> */
+.estado-pendiente                                   { background: var(--intermedio-fondo); color: var(--intermedio); }
+.estado-confirmada, .estado-confirmado, .estado-aprobada { background: var(--basico-fondo); color: var(--basico); }
+.estado-rechazada, .estado-rechazado, .estado-cancelada  { background: var(--avanzado-fondo); color: var(--avanzado); }
+
+/* Chips de equipamiento */
+.chips { display: flex; flex-wrap: wrap; gap: .35rem; margin: 0; max-width: none; }
+.chip {
+  display: inline-block;
+  padding: .1rem .7rem;
+  border-radius: 999px;
+  background: var(--primario-claro);
+  color: var(--enlace);
+  font-size: .8rem;
+  font-weight: 600;
+}
+
+/* Listado: resumen y paginación */
+.resumen { margin: 0 0 1rem; color: var(--suave); max-width: none; }
+
+.paginacion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  font-size: .95rem;
+}
+.paginacion a, .paginacion .inactivo {
+  padding: .4rem .9rem;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: var(--radio);
+  font-weight: 600;
+  text-decoration: none;
+}
+.paginacion a { background: var(--superficie); }
+.paginacion a:hover { background: var(--primario-claro); }
+.paginacion .inactivo { color: var(--suave); border-style: dashed; border-color: var(--linea); opacity: .7; }
+
+/* Detalle de rutina */
+.detalle {
+  padding: clamp(1.25rem, 4vw, 2rem);
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+}
+.detalle h1 { margin: 0 0 .5rem; }
+.detalle h2 { margin-top: 2rem; }
+.detalle > div:last-child:not(.datos) {          /* Editar / Eliminar */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--linea);
+}
+.detalle form { margin: 0; }
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1.1rem 1.5rem;
+  margin: 1.5rem 0;
+  padding: 1.25rem 0;
+  border-block: 1px solid var(--linea);
+}
+.datos dt { margin-bottom: .1rem; color: var(--suave); font-size: .85rem; }
+.datos dd { margin: 0; font-weight: 700; }
 
 /* Estados vacíos y mensajes */
-.vacio { grid-column: 1 / -1; background: var(--superficie); border: 1px dashed var(--linea); border-radius: 6px; padding: 2rem; text-align: center; color: var(--suave); margin: 0; }
-.mensajes { list-style: none; padding: 0; margin: 0 0 1rem; }
-.mensaje { padding: .7rem 1rem; border: 1px solid var(--linea); border-radius: 6px; background: var(--superficie); margin-bottom: .5rem; }
-.mensaje.success { border-color: #9ad3b5; background: #eaf7f0; }
-.mensaje.error { border-color: #f0b3ac; background: #fdeeed; }
-.mensaje.warning { border-color: #ecd08a; background: #fdf6e3; }
+.vacio {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 2rem 1.5rem;
+  max-width: none;
+  text-align: center;
+  color: var(--suave);
+  background: var(--superficie);
+  border: 1px dashed var(--linea-fuerte);
+  border-radius: var(--radio-lg);
+}
 
-.pie { text-align: center; color: var(--suave); font-size: .85rem; padding: 1.5rem 1rem; border-top: 1px solid var(--linea); }
+.mensajes { list-style: none; margin: 0 0 1.25rem; padding: 0; }
+.mensaje {
+  margin-bottom: .5rem;
+  padding: .75rem 1rem;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-left: 4px solid var(--linea-fuerte);
+  border-radius: var(--radio);
+}
+.mensaje.success { background: var(--basico-fondo);     border-color: var(--basico);     color: var(--basico); }
+.mensaje.error   { background: var(--avanzado-fondo);   border-color: var(--avanzado);   color: var(--avanzado); }
+.mensaje.warning { background: var(--intermedio-fondo); border-color: var(--intermedio); color: var(--intermedio); }
+.mensaje.info    { background: var(--primario-claro);   border-color: var(--primario);   color: var(--enlace); }
+.mensaje.success, .mensaje.error, .mensaje.warning, .mensaje.info { font-weight: 600; }
+
+
+/* 7. TABLAS
+   -------------------------------------------------------------------------- */
+.tabla-contenedor {
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-lg);
+}
+.tabla { width: 100%; min-width: 36rem; border-collapse: collapse; }
+.tabla th, .tabla td {
+  padding: .75rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--linea);
+}
+.tabla th {
+  background: var(--superficie-2);
+  color: var(--suave);
+  font-size: .85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.tabla tbody tr:last-child td { border-bottom: 0; }
+.tabla tbody tr:hover { background: var(--superficie-2); }
+.tabla .boton { min-height: 2rem; padding: .3rem .8rem; font-size: .9rem; }
+
+.acciones { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
+.acciones form { margin: 0; }
+
+
+/* 8. UTILIDADES
+   -------------------------------------------------------------------------- */
+.suave { color: var(--suave); }
+.inline { display: inline; }
+
+
+/* 9. RESPONSIVE Y ACCESIBILIDAD
+   -------------------------------------------------------------------------- */
+@media (min-width: 48rem) {
+  .barra { position: sticky; top: 0; z-index: 20; }
+}
+
+@media (max-width: 47.99rem) {
+  .barra nav {                        /* menú en una sola fila deslizable, en vez de 4 líneas apiladas */
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: .25rem;
+    scrollbar-width: thin;
+  }
+  .detalle > div:last-child:not(.datos) .boton { flex: 1 1 auto; }
+}
 
 @media (max-width: 34rem) {
   .contadores { grid-template-columns: 1fr; }
+  .contadores div { flex-direction: row-reverse; justify-content: space-between; align-items: baseline; }
+  .contadores dd { font-size: 2rem; }
+  .filtros input, .filtros select { width: 100%; }
+  .filtros label { width: 100%; }
+  .filtros .boton { width: 100%; }
+  .paginacion { flex-wrap: wrap; justify-content: center; }
 }
-/* Hito 4: tablas, acciones y bloques de formulario */
-.tabla-contenedor { overflow-x: auto; background: var(--superficie); border: 1px solid var(--linea); border-radius: 6px; margin-bottom: 1.5rem; }
-.tabla { width: 100%; border-collapse: collapse; }
-.tabla th, .tabla td { text-align: left; padding: .7rem 1rem; border-bottom: 1px solid var(--linea); vertical-align: middle; }
-.tabla tbody tr:last-child td { border-bottom: 0; }
-.tabla th { color: var(--suave); font-size: .85rem; font-weight: 600; }
-.tabla .boton { border: 1px solid var(--linea); padding: .35rem .8rem; font-size: .9rem; }
-.acciones { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; }
-.acciones form { margin: 0; }
-.boton-peligro { color: var(--avanzado); border-color: var(--avanzado) !important; }
-.bloque { background: var(--superficie); border: 1px solid var(--linea); border-radius: 6px; padding: 1rem; margin-bottom: 1.5rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}
+
+@media print {
+  .barra, .pie, .filtros, .paginacion, .acciones, .hero::after { display: none; }
+  body { background: #fff; color: #000; }
+  .tarjeta, .detalle, .tabla-contenedor { border-color: #999; break-inside: avoid; }
+}

@@ -1,0 +1,45 @@
+(Martin Araya)
+
+Para el Hito 5 por temas de confusion le pedi a la IA como se deberia realizar y esto me dio de resultado: 
+
+guía en 5 pasos, sin migraciones nuevas porque tu modelo Inscripcion ya tenía todo.
+
+Paso	    Archivo	    Qué se agrega
+1	        models.py	    cupos_ocupados() y cupos_libres() dentro de Rutina
+2	        views.py	    5 vistas: inscribirse, mis_solicitudes, solicitud_cancelar, solicitudes_recibidas, solicitud_resolver
+3	        urls.py	        5 rutas nuevas
+4	        Plantillas	    Enlaces en _menu.html, bloque de inscripción en detalle.html, y dos archivos nuevos: mis_solicitudes.html y solicitudes_recibidas.html
+5	        403.html	    Mensaje general: “No tienes permiso para realizar esta acción.” 
+
+La IA solicito actualizar el archivo 403 para que el texto a mostrar en pantalla quedara de forma general 
+
+Ayuda en la edicion de html.
+
+Le pregunte a la IA si podia revisar mi trabajo y como hacer para que usuario y admin vieran cosas
+
+Me recomendo actualizar archivos .py no solamente los html ya que habria un choque de errores al intentar arrancar
+
+
+Actualizacion del css.
+
+Le pedi a la IA si pudiera mejorar el css ya que por mi parte me confundo y mucho y dependo de la IA en estos casos y me dio de resultado la version actual del css
+
+Resumen de lo que hizo la IA:
+
+Orden: el archivo ahora tiene secciones claras y todos los colores y medidas están en variables al inicio.
+
+Identidad: azul marino con acento amarillo y una franja de cinta de precaución en la portada.
+
+Formularios: antes casi no tenían estilos. Ahora los campos, errores de validación y checkboxes se ven completos.
+
+Botones: ahora son visibles (antes “Cerrar sesión” y “Eliminar” se perdían en el fondo blanco) y tienen estados hover y disabled.
+
+Navegación: queda fija en pantallas grandes y se desliza en una sola fila en móvil.
+
+Tarjetas: el nivel de la rutina se ve en el borde de color y toda la tarjeta es clicable. Nivel y estado ahora son insignias.
+
+Tablas, paginación y mensajes: más legibles, con fila resaltada, botones de página y franja de color.
+
+Accesibilidad: el foco de teclado tiene mejor contraste y se respeta prefers-reduced-motion.
+
+Extras: modo oscuro automático, ajustes para móvil y estilos de impresión.
