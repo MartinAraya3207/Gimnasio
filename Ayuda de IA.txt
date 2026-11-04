@@ -1,5 +1,22 @@
 (Martin Araya)
 
+
+Para elaborar el hito 1 se le solicito a la IA que revisara el documento del caso y me diera las tablas a crear en models.py 
+las tablas a crear fueron:
+-   Disciplina
+-   Rutina
+-   Equipamiento
+-   Inscripcion
+-   User
+-   Rutina_Equipamiento
+
+En el hito 3 se le solicito a la IA revisar el trabajo realizado por mi compañero Benjamin Barraza para saber que se tenia que elaborar ahora segun la informacion recibida.
+
+La IA solicito crear
+-   Micuenta: para hacer una pagina para editar nombre, correo y contraseña
+-   Cuenta: para registrarse, iniciar sesion, y cerrar sesion, todo esto gracias a los formularios de Django que trae por defecto.
+-   Crud de rutina: La creacion de formularios, las vistas, las plantillas y las rutas para crear editar y eliminar
+
 Para el Hito 5 por temas de confusion le pedi a la IA como se deberia realizar y esto me dio de resultado: 
 
 guía en 5 pasos, sin migraciones nuevas porque tu modelo Inscripcion ya tenía todo.
