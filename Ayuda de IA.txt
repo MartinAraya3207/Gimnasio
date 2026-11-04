@@ -43,3 +43,57 @@ Tablas, paginación y mensajes: más legibles, con fila resaltada, botones de p�
 Accesibilidad: el foco de teclado tiene mejor contraste y se respeta prefers-reduced-motion.
 
 Extras: modo oscuro automático, ajustes para móvil y estilos de impresión.
+
+(Benjamin Barraza)
+Para empezar, le pedí a la IA que analizara el documento del caso y me resumiera lo que se pedía. Me entregó los requisitos ordenados por hito, el modelo de datos, las reglas de negocio y las decisiones que el caso deja abiertas (por ejemplo, qué pasa con las rutinas si se elimina una disciplina). También me advirtió que, aunque el trabajo sea en pareja, la evaluación es individual, así que ambos debemos entender todo el código.
+
+Hito 1: revisión del trabajo hecho
+
+Por dudas sobre si el Hito 1 estaba completo, le pasé el proyecto a la IA para que lo revisara. Me señaló mejoras y detalles por corregir:
+
+Tema	       Qué indicó la IA
+Admin	       A Disciplina y Equipamiento les faltaba un filtro en el listado
+Configuración  Idioma y zona horaria estaban en inglés/UTC, y la contraseña de MySQL quedaba escrita en settings.py
+Proyecto	   Faltaban requirements.txt y .gitignore
+Datos 
+de prueba	   Los usuarios no tenían correo y las descripciones eran todas iguales, lo que dificultaba probar el buscador
+Modelo	       Conviene ordenar por fecha y por id, para que “las 4 más recientes” no cambie de orden
+
+También me explicó que Inscripcion.clean() solo se ejecuta en formularios y en el admin, no al guardar directamente. Además, me señaló posibles choques entre el reparto de tareas de Martin y el mío (por ejemplo, que mi Hito 4 depende del CRUD del Hito 3).
+
+Hito 2: páginas públicas
+
+Para el Hito 2 le pedí a la IA ayuda con la portada, el listado y el detalle. Primero me entregó los archivos en un zip, pero le pedí que me lo explicara paso a paso para entenderlo y escribirlo yo. Me dio esta guía:
+
+Paso Archivo	   Qué se agrega
+1	settings.py 
+    y models.py	  Idioma y zona horaria, y el orden de las rutinas por fecha e id
+2	urls.py       (proyecto y app)	Rutas de portada, listado y detalle
+3	views.py	  Tres vistas, con select_related y prefetch_related para evitar consultas de más
+4	Plantillas	  base.html, _menu.html, _tarjeta_rutina.html, portada.html, listado.html y detalle.html
+5	estilos.css	  Los estilos de las páginas públicas
+6	tests.py	  Pruebas automáticas opcionales
+
+Me confundí con varias partes y se las pregunté a la IA:
+
+Carpetas y archivos repetidos. Me explicó la diferencia entre la carpeta del proyecto (Gimnasio) y la de la aplicación (app_gim), y por qué hay dos urls.py. También me explicó por qué existe templates/app_gim/.
+Archivo mal nombrado. Al mostrarle una captura, la IA detectó que mi archivo se llamaba url y no urls.py.
+Utilidad de cada comando. Le pedí que justificara cada paso. Me separó lo necesario de lo opcional, y reconoció que cambiar el idioma no era obligatorio.
+Cómo probar en el navegador. No entendía el paso de pruebas (si debía tener el entorno virtual activo y cómo seguir la lista). Me lo explicó con instrucciones más claras, y yo lo probé en mi computador.
+
+Hito 4: seguridad, permisos y catálogos
+
+Para el Hito 4 le pasé a la IA el proyecto actualizado con el trabajo de Martin y le pedí una guía paso a paso. Al revisarlo, detectó que las vistas de editar y eliminar respondían con error 404 a quien intentaba modificar una rutina ajena, cuando el requisito pide “sin permiso”. Me dio esta guía:
+
+Paso Archivo	       Qué se agrega
+1	 forms.py	     DisciplinaForm (nombre mínimo y sin repetidos) y la regla de máximo 5 equipamientos
+2	 views.py	    _rutina_del_dueno (error 403 si la rutina es de otro) y las vistas mis_rutinas y disciplinas
+3	 urls.py	     Dos rutas nuevas
+4	 Plantillas	     403.html, mis_rutinas.html y disciplinas.html
+5	_menu.html 
+y rutina_form.html	 Enlaces a “Mis rutinas” y “Disciplinas”
+6	estilos.css	     Estilos de tablas y botones
+7	models.py	     Comentario que justifica que al eliminar una disciplina las rutinas queden sin disciplina
+8	tests_hito4.py	 Pruebas automáticas opcionales
+
+Al probar la restricción de permisos me salió un error 404 y no entendía por qué. Se lo consulté a la IA y me explicó que había escrito la palabra ID en la dirección en vez del número real de la rutina, y que el comportamiento era correcto.
